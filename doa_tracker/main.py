@@ -5,6 +5,7 @@ import numpy as np
 import time
 import requests
 # from pydantic import BaseModel
+import pprint
 
 
 class DoaTracker(ReachyMiniApp):
@@ -28,6 +29,8 @@ class DoaTracker(ReachyMiniApp):
                 time.sleep(0.5)
                 continue
 
+            pprint.pprint(d)
+
             if not d or not d["speech_detected"]:
                 time.sleep(0.2)
                 continue
@@ -37,7 +40,7 @@ class DoaTracker(ReachyMiniApp):
                 p_head = np.array([np.sin(angle), np.cos(angle), 0.0])
                 R = reachy_mini.get_current_head_pose()[:3, :3]
                 p = R @ p_head
-                reachy_mini.look_at_world(p[0], p[1], p[2], duration=0.5)
+                reachy_mini.look_at_world(p[0], p[1], p[2], duration=1.0)
                 last_doa = angle
                 time.sleep(0.6)   # let the move finish; motor noise skews DoA
             else:
