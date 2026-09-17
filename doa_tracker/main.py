@@ -4,8 +4,6 @@ from reachy_mini import ReachyMini, ReachyMiniApp
 import numpy as np
 import time
 import requests
-# from pydantic import BaseModel
-import pprint
 
 
 class DoaTracker(ReachyMiniApp):
@@ -29,27 +27,32 @@ class DoaTracker(ReachyMiniApp):
                 time.sleep(0.5)
                 continue
 
-            pprint.pprint(d)
-
             if not d or not d["speech_detected"]:
                 time.sleep(0.2)
                 continue
 
-            angle = d["angle"]
-            if abs(angle - last_doa) > THRESHOLD:
-                print(angle)
-                p_head = np.array([np.sin(angle), np.cos(angle), 0.0])
-                print(p_head)
-                R = reachy_mini.get_current_head_pose()[:3, :3]
-                print(R)
-                p = R @ p_head
-                print(p)
-                reachy_mini.look_at_world(p[0], p[1], p[2], duration=1.0)
-                last_doa = angle
+            # So 0 means left, π/2 means straight ahead and π means right.
+            doa = d["angle"]
+            if abs(doa - last_doa) > THRESHOLD:
+                print(fmt_doa(doa))
+                dir_head = np.array([np.sin(doa), np.cos(doa), 0.0])
+                print(dir_head)
+                head_rot = reachy_mini.get_current_head_pose()[:3, :3]
+                print(head_rot)
+                dir_world = head_rot @ dir_head
+                print(dir_world)
+                reachy_mini.look_at_world(*dir_world, duration=1.0)
+                last_doa = doa
                 time.sleep(0.6)   # let the move finish; motor noise skews DoA
             else:
                 time.sleep(0.2)
 
+
+def fmt_doa(angle: float) -> str:
+    """Format a DoA angle (0 = left, π/2 = front, π = right) as degrees off center."""
+    deg = np.degrees(angle) - 90
+    side = "L" if deg < 0 else "R" if deg > 0 else ""
+    return f"{abs(deg):.0f}° {side}".strip()
 
 
 if __name__ == "__main__":
