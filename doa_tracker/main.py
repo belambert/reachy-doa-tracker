@@ -36,7 +36,7 @@ class DoaTracker(ReachyMiniApp):
             if abs(doa - last_doa) > THRESHOLD:
                 print(f"doa: {fmt_doa(doa)}")
                 body_yaw = reachy_mini.get_current_joint_positions()[0][0]
-                print(f"body yaw: {np.degrees(body_yaw):.0f}°")
+                print(f"body yaw: {fmt_lr(body_yaw)}")
                 dir_head = np.array([np.sin(doa), np.cos(doa), 0.0])
                 print(f"dir (head frame): {dir_head}")
                 head_rot = reachy_mini.get_current_head_pose()[:3, :3]
@@ -52,9 +52,14 @@ class DoaTracker(ReachyMiniApp):
 
 def fmt_doa(angle: float) -> str:
     """Format a DoA angle (0 = left, π/2 = front, π = right) as degrees off center."""
-    deg = np.degrees(angle) - 90
-    side = "L" if deg < 0 else "R" if deg > 0 else ""
-    return f"{abs(deg):.0f}° {side}".strip()
+    return fmt_lr(np.pi / 2 - angle)
+
+
+def fmt_lr(angle: float) -> str:
+    """Format a yaw angle (positive = left, negative = right) as degrees L/R."""
+    deg = round(np.degrees(angle))
+    side = "L" if deg > 0 else "R" if deg < 0 else ""
+    return f"{abs(deg)}° {side}".strip()
 
 
 if __name__ == "__main__":
