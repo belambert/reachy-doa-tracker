@@ -37,9 +37,13 @@ class DoaTracker(ReachyMiniApp):
 
             angle = d["angle"]
             if abs(angle - last_doa) > THRESHOLD:
+                print(angle)
                 p_head = np.array([np.sin(angle), np.cos(angle), 0.0])
+                print(p_head)
                 R = reachy_mini.get_current_head_pose()[:3, :3]
+                print(R)
                 p = R @ p_head
+                print(p)
                 reachy_mini.look_at_world(p[0], p[1], p[2], duration=1.0)
                 last_doa = angle
                 time.sleep(0.6)   # let the move finish; motor noise skews DoA
