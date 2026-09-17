@@ -1,47 +1,26 @@
-let antennasEnabled = true;
+const status = document.getElementById("status");
+const radios = document.querySelectorAll('input[name="mode"]');
 
-async function updateAntennasState(enabled) {
+async function request(method, body) {
     try {
-        const resp = await fetch("/antennas", {
-            method: "POST",
+        const resp = await fetch("/mode", {
+            method,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ enabled }),
+            body: body && JSON.stringify(body),
         });
-        const data = await resp.json();
-        antennasEnabled = data.antennas_enabled;
-        updateUI();
+        showMode((await resp.json()).mode);
     } catch (e) {
-        document.getElementById("status").textContent = "Backend error";
+        status.textContent = "Backend error";
     }
 }
 
-async function playSound() {
-    try {
-        await fetch("/play_sound", { method: "POST" });
-    } catch (e) {
-        console.error("Error triggering sound:", e);
-    }
+function showMode(mode) {
+    radios.forEach((r) => (r.checked = r.value === mode));
+    status.textContent = `Tracking with: ${mode}`;
 }
 
-function updateUI() {
-    const checkbox = document.getElementById("antenna-checkbox");
-    const status = document.getElementById("status");
+radios.forEach((r) =>
+    r.addEventListener("change", () => request("POST", { mode: r.value }))
+);
 
-    checkbox.checked = antennasEnabled;
-
-    if (antennasEnabled) {
-        status.textContent = "Antennas status: running";
-    } else {
-        status.textContent = "Antennas status: stopped";
-    }
-}
-
-document.getElementById("antenna-checkbox").addEventListener("change", (e) => {
-    updateAntennasState(e.target.checked);
-});
-
-document.getElementById("sound-btn").addEventListener("click", () => {
-    playSound();
-});
-
-updateUI();
+request("GET");

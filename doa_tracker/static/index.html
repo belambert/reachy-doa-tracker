@@ -3,24 +3,21 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Reachy Mini example app template</title>
+    <title>DoA Tracker</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
-    <h1>Reachy Mini – Control Panel</h1>
+    <h1>DoA Tracker</h1>
 
     <div id="controls">
-        <label style="display:flex; align-items:center; gap:8px;">
-            <input type="checkbox" id="antenna-checkbox" checked>
-            Antennas
-        </label>
-
-        <button id="sound-btn">Play Sound</button>
+        <span>Turn toward sound with:</span>
+        <label><input type="radio" name="mode" value="head" checked> Head</label>
+        <label><input type="radio" name="mode" value="body"> Body</label>
     </div>
 
-    <div id="status">Antennas status: running</div>
+    <div id="status"></div>
     <script src="/static/main.js"></script>
 </body>
 

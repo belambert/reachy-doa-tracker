@@ -3,16 +3,6 @@ body {
     margin: 24px;
 }
 
-#sound-btn {
-    padding: 10px 20px;
-    border: none;
-    color: white;
-    cursor: pointer;
-    font-size: 16px;
-    border-radius: 6px;
-    background-color: #3498db;
-}
-
 #status {
     margin-top: 16px;
     font-weight: bold;
