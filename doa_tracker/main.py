@@ -34,13 +34,15 @@ class DoaTracker(ReachyMiniApp):
             # So 0 means left, π/2 means straight ahead and π means right.
             doa = d["angle"]
             if abs(doa - last_doa) > THRESHOLD:
-                print(fmt_doa(doa))
+                print(f"doa: {fmt_doa(doa)}")
+                body_yaw = reachy_mini.get_current_joint_positions()[0][0]
+                print(f"body yaw: {np.degrees(body_yaw):.0f}°")
                 dir_head = np.array([np.sin(doa), np.cos(doa), 0.0])
-                print(dir_head)
+                print(f"dir (head frame): {dir_head}")
                 head_rot = reachy_mini.get_current_head_pose()[:3, :3]
-                print(head_rot)
+                print(f"head rotation:\n{head_rot}")
                 dir_world = head_rot @ dir_head
-                print(dir_world)
+                print(f"dir (world frame): {dir_world}")
                 reachy_mini.look_at_world(*dir_world, duration=1.0)
                 last_doa = doa
                 time.sleep(0.6)   # let the move finish; motor noise skews DoA
